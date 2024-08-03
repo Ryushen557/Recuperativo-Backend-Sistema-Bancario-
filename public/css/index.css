@@ -27,7 +27,12 @@ h1 {
     width: 60%;
     text-align: center;
 }
-
+#cerrar{
+    background-color: rgb(219, 46, 46);
+}
+#cerrar:hover{
+    background-color: rgb(255, 0, 0);
+}
 .menu a:hover {
     background-color: #004d40;
 }
@@ -69,4 +74,13 @@ h1 {
     align-items: center;
     justify-content: space-evenly;
     width: 100%;
+}
+.button {
+    padding: 10px 20px;
+    background-color: #00796b;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
 }

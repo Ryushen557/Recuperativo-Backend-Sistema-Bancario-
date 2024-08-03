@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 03-08-2024 a las 17:06:17
+-- Tiempo de generación: 03-08-2024 a las 19:45:37
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -67,6 +67,24 @@ CREATE TABLE `cuenta` (
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `transferencias`
+--
+
+CREATE TABLE `transferencias` (
+  `usuarioOrigen` varchar(25) NOT NULL,
+  `usuarioDestino` varchar(25) NOT NULL,
+  `monto` float(11,3) NOT NULL,
+  `concepto` varchar(100) NOT NULL,
+  `cuentaOrigen` bigint(25) NOT NULL,
+  `cuentaDestino` bigint(25) NOT NULL,
+  `fecha` varchar(25) NOT NULL,
+  `operacion` bigint(25) NOT NULL,
+  `id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `usuarios`
 --
 
@@ -106,6 +124,12 @@ ALTER TABLE `cuenta`
   ADD KEY `idUsuario` (`idUsuario`);
 
 --
+-- Indices de la tabla `transferencias`
+--
+ALTER TABLE `transferencias`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indices de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
@@ -132,6 +156,12 @@ ALTER TABLE `cooperativa`
 -- AUTO_INCREMENT de la tabla `cuenta`
 --
 ALTER TABLE `cuenta`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `transferencias`
+--
+ALTER TABLE `transferencias`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --

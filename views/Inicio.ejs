@@ -9,17 +9,30 @@
 <body>
     <div class="container-row">
         <div class="menu">
-            <h1>Bienvenido  <%= token.usuario %> </h1>
-
-            <a href="/usuarios/cerrar">Salir</a>
+            <% if(token.rol==="admin"){%>
+                <h1>Bienvenido Administrador <%= token.nombre %></h1>
+       <%     }else{%>
+        <h1>Bienvenido <%= token.nombre %></h1>
+    <%   } %> 
+        <h3>Usuario: <%= token.usuario %></h3>
+            <a href="/usuarios/cerrar" id="cerrar">Salir</a>
         </div>
+        <% if(token.rol==="admin"){%>
+            <div class="container">
+                <a href="/prestamos">Prestamos</a>
+                <a href="/cooperativas">Cooperativa</a>
+                <a href="/usuarios/lista">Usuarios</a>
+            </div>
+       <% }else{%>
         <div class="container">
             <a href="/prestamos">Prestamos</a>
-            <a href="/cuentas/trasferencias">Transferir</a>
+            <a href="/cuentas/transferencias">Transferir</a>
             <a href="/cooperativas">Cooperativa</a>
             <a href="/usuarios/editar">Editar</a>
             <a href="/cuentas">Cuentas</a>
         </div>
+    <%   } %>
+       
     </div>
 
 </body>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/usuarios.css">
+</head>
+<body>
+    <div class="nav">
+        <a href="/usuarios/Inicio">Inicio</a>
+        <a href="/cuentas/historial">Historial de Transferencias</a>
+    </div>
+    <div class="form-container">
+    <form method="post" id="edit-coop-form">
+        <label for="usuario">Usuario a Transferir</label>
+            <input  type="input" name="usuario" required>
+            <label for="destino">Numero de cuenta</label>
+            <input  type="number" name="destino" required>
+            <label for="monto">Cantidad a Transferir</label>
+            <input  type="number"  name="monto" required>
+            <label for="concepto">Concepto de la transferencia</label>
+            <input  type="input"  name="concepto" required>
+            <label for="clave">Ingresa tu contraseña para confirmar el Pago</label>
+            <input  type="password"  name="clave"  required>
+
+            <label for="cuenta">Cuenta para realizar la transferencia</label>
+            <select name="cuenta" >
+                <option value="corriente">Corriente</option>
+                <option value="ahorro">Ahorro</option>
+            </select>
+            <button type="submit" class="boton">Transferir</button>
+           
+      </form>
+    </div>
+
+</body>
+</html>

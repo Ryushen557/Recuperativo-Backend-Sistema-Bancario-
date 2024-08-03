@@ -13,15 +13,17 @@
             <h3>El numero de cuenta es: <%= corriente.numeroCuenta %></h3>
             <div>
                 <form method="post" >
-                    <input type="number" name="cantidadCorriente" placeholder="Depositar/Retirar Cuenta corriente" class="cantidad">
-                    <input type="submit" class="boton">
+                    <label for="cantidadCorriente">Depositar o Retirar de tu Cuenta corriente</label>
+                    <input type="number" name="cantidadCorriente" class="cantidad" required>
+                    <input type="submit" class="button">
                 </form>
                 <% if(ahorro){%>
                     <h1>El saldo de tu cuenta ahorro es: <%= ahorro.cantidad %></h1>
                     <h3>El numero de cuenta es: <%= ahorro.numeroCuenta %></h3>
                     <form method="post" >
-                        <input type="number" name="cantidadAhorro" placeholder="Depositar/Retirar Cuenta ahorro" class="cantidad">
-                        <input type="submit" class="boton">
+                        <label for="cantidadAhorro">Depositar o Retirar de tu Cuenta Ahorro</label>
+                        <input type="number" name="cantidadAhorro"  class="cantidad" required>
+                        <input type="submit" class="button">
                     </form>
                 <% } %>
                 

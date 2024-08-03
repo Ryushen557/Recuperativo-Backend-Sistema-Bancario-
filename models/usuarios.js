@@ -167,7 +167,7 @@ class UsuariosModel {
       });
     });
   }
-
+  
 }
 
 module.exports = new UsuariosModel();

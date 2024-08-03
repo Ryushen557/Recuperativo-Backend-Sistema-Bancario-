@@ -31,6 +31,26 @@ class CuentasController {
             });
         })
     }
+    Transferencia(id,datos){
+        return new Promise((resolve, reject) => {
+            CuentasModel.Transferencia(id,datos)
+            .then((result) => {
+                resolve(result)
+            }).catch((err) => {
+                reject(err)
+            });
+        })
+    }
+    ObtenerHistorial(token){
+        return new Promise((resolve, reject) => {
+            CuentasModel.ObtenerHistorial(token)
+            .then((result) => {
+                resolve(result)
+            }).catch((err) => {
+                reject(err)
+            });
+        })
+    }
 }
    
 

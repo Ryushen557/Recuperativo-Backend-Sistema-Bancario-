@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/usuarios.css">
+</head>
+<body> 
+    <div class="nav">
+        <a href="/usuarios/Inicio">Inicio</a>
+    </div>
+    <ul id="user-list">
+        <% transferecias.forEach(transferecias => { %>
+            <li>
+                <div class="container">
+                    <p>Usuario De origen: <%= transferecias.usuarioOrigen %> - Usuario Destino: <%= transferecias.usuarioDestino %> </p>
+                    <p>Monto de la Transferencia: <%= transferecias.monto %> - Concepto: <%= transferecias.concepto %> </p>
+                    <p>Cuenta de Origen: <%= transferecias.cuentaOrigen %> - Cuenta Destino: <%= transferecias.cuentaDestino %></p>
+                    <p>Fecha de la transferencia: <%= transferecias.fecha %> - Nº de Operacion: <%= transferecias.operacion %></p>
+
+                </div>
+            </li>
+            <% })%>
+    </ul>
+</body>
+</html>
