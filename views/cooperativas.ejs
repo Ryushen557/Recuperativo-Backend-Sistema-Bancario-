@@ -1,35 +1,65 @@
 <%- include('layout/header') %>
+<link rel="stylesheet" href="/css/usuarios.css">
 <body>
     <h1>Cooperativas - SISTEMA BANCARIO</h1>
     <div class="nav">
-        <a href="/index">Inicio</a>
-        <a href="/usuarios">Usuarios</a>
+        <a href="/usuarios/Inicio">Inicio</a>
     </div>
+    <div class="form-container">
+
+        <p>Eres miembro de las cooperativas <%coopUser.forEach((nombre)=>{%>
+            <%= nombre.nombre %>
+       <% }) %> </p>
+       <p>Tus fechas de pago son los: <%coopUser.forEach((nombre)=>{%>
+        <%= nombre.fecha %> de cada mes 
+    <% }) %> </p>
+    </div>
+    <% if(Usuario.rol==="admin"){%>
+        <div class="form-container">
+            <h2>Agregar Nueva Cooperativa</h2>
+            <form id="add-coop-form" method="post">
+    
+                <label for="nombre">Nombre:</label>
+                <input type="text" name="nombre" required placeholder="Nombre de la Cooperativa">
+                <label for="duracion">Duracion:</label>
+                <input type="text" name="duracion" required placeholder="Duracion de la Cooperativa">
+                <label for="pagoTotal">Pago:</label>
+                <input type="number" name="pagoTotal" required placeholder="Ingrese la cantidad a pagar">
+                <label for="pagoMensual">Pago de mensualidad:</label>
+                <input type="number" name="pagoMensual" required placeholder="Ingrese la cantidad a pagar mensualmente">
+                <label for="fechaPago">Fechas de pago:</label>
+                <input type="text" name="fechaPago" required placeholder="Dias de pago">
+                <button type="submit">Agregar cooperativa</button>
+            </form>
+        </div>
+    <%} %>
     <div id="message" class="message success">Refresca la página para ver los cambios</div>
     <ul id="user-list">
         <% cooperativas.forEach(cooperativas => { %>
             <li>
-                <span>ID: <%= cooperativas.id %> - <%= cooperativas.nombre %> </span>
-                <div>
-                    <button class="edit-button" onclick="editCoop('<%= cooperativas.id %>', '<%= cooperativas.nombre %>')">Editar</button>
-                    <button class="delete-button" onclick="deleteCoop('<%= cooperativas.id %>')">Eliminar</button>
+                <div class="container">
+                    <p>ID: <%= cooperativas.id %> - <%= cooperativas.nombre %> </p>
+                    <p>Pago: <%= cooperativas.pago %> - Pago mensual: <%= cooperativas.pagoMensual %> </p>
+                    <p>Duracion: <%= cooperativas.duracion %> meses - Fechas de Pago: <%= cooperativas.fechaPago %> de cada mes </p>
+
                 </div>
+
+                <% if(Usuario.rol==="admin"){%>
+                    <div>
+                        <button class="edit-button" onclick="editCoop('<%= cooperativas.id %>', '<%= cooperativas.nombre %>','<%= cooperativas.pago %>','<%= cooperativas.duracion %>','<%= cooperativas.pagoMensual %>','<%= cooperativas.fechaPago %>')">Editar</button>
+                        <button class="delete-button" onclick="deleteCoop('<%= cooperativas.id %>')">Eliminar</button>
+                    </div>
+                    <%} %>
+                    <% if(Usuario.rol==="usuario"){%>
+
+                        <form method="post">
+                            <input type="hidden" name="id" value="<%= cooperativas.id %>">
+                            <button type="submit" class="edit-button">Unirse</button>
+                        </form>
+                        <%} %>
             </li>
         <% }); %>
     </ul>
-
-    <div class="form-container">
-        <h2>Agregar Nueva Cooperativa</h2>
-        <form id="add-coop-form" onsubmit="addCoop(event)">
-            <label for="id">ID:</label>
-            <input type="number" id="id" name="id" required>
-
-            <label for="nombre">Nombre:</label>
-            <input type="text" id="nombre" name="nombre" required>
-
-            <button type="submit">Agregar Usuario</button>
-        </form>
-    </div>
 
     <div class="form-container" id="edit-coop-form-container" style="display:none;">
         <h2>Editar Usuario</h2>
@@ -38,89 +68,66 @@
 
             <label for="edit-nombre">Nombre:</label>
             <input type="text" id="edit-nombre" name="nombre" required>
+            <label for="duracion">Duracion:</label>
+            <input type="text" id="edit-duracion"name="duracion" required placeholder="Duracion de la Cooperativa">
+            <label for="pagoTotal">Pago:</label>
+            <input type="number"id="edit-pago" name="pagoTotal" required placeholder="Ingrese la cantidad a pagar">
+            <label for="pagoMensual">Pago de mensualidad:</label>
+            <input type="number" id="edit-pagoMensual"name="pagoMensual" required placeholder="Ingrese la cantidad a pagar mensualmente">
+            <label for="fechaPago">Fechas de pago:</label>
+             <input type="text" id="edit-fecha"name="fechaPago" required placeholder="Dias de pago">
 
             <button type="submit">Actualizar Cooperativa</button>
         </form>
     </div>
 
     <script>
-        function showMessage(message, type) {
-            const messageDiv = document.getElementById('message');
-            messageDiv.textContent = message;
-            messageDiv.className = 'message ' + type;
-            messageDiv.style.display = 'block';
-            setTimeout(() => {
-                messageDiv.style.display = 'none';
-            }, 3000);
-        }
-
-        function addCoop(event) {
-            event.preventDefault();
-
-            const id = document.getElementById('id').value;
-            const nombre = document.getElementById('nombre').value;
-
-            fetch('http://localhost:3000/cooperativas', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ id, nombre})
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showMessage('cooperativas agregadas exitosamente. Refresca la página para ver los cambios.', 'success');
-                }
-            });
-        }
-
+        
         function deleteCoop(id) {
-            fetch(`http://localhost:3000/cooperativas/${id}`, {
+            fetch(`http://localhost:3000/cooperativas/borrar/${id}`, {
                 method: 'DELETE'
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showMessage('Cooperativas eliminada exitosamente. Refresca la página para ver los cambios.', 'success');
-                }
-            });
+            .then(()=>{
+                window.location.reload();
+            })
         }
 
-        function editCoop(id, nombre) {
+        function editCoop(id, nombre,pago,duracion,pagoMensual,fecha) {
             document.getElementById('edit-id').value = id;
             document.getElementById('edit-nombre').value = nombre;
+            document.getElementById('edit-pago').value = pago;
+            document.getElementById('edit-duracion').value = duracion;
+            document.getElementById('edit-pagoMensual').value = pagoMensual;
+            document.getElementById('edit-fecha').value = fecha;
+
             document.getElementById('edit-coop-form-container').style.display = 'block';
         }
 
         function updateCoop(event) {
             event.preventDefault();
+            console.log("llegue")
 
             const id = document.getElementById('edit-id').value;
-            const nombre = document.getElementById('edit-nombre').value;
+            const json ={
+                nombre: document.getElementById('edit-nombre').value,
+                pago: document.getElementById('edit-pago').value,
+                duracion: document.getElementById('edit-duracion').value,
+                pagoMensual: document.getElementById('edit-pagoMensual').value,
+                fecha: document.getElementById('edit-fecha').value
+            } 
            
-            fetch(`http://localhost:3000/cooperativas/${id}`, {
+            fetch(`http://localhost:3000/cooperativas/editar/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ nombre })
+                body: JSON.stringify(json)
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showMessage('Cooperativas actualizada exitosamente. Refresca la página para ver los cambios.', 'success');
-                    document.getElementById('edit-coop-form-container').style.display = 'none';
-                }
+            .then(() => {
+                    document.getElementById('edit-coop-form-container').style.display = 'none'
+                    location.reload()
             });
+            
         }
     </script>
-    <div class="footer">
-        Integrantes:<br>
-        Br. Miguel Suarez. CI. V-28.206.469<br>
-        Br. Rhonny Jaimes. CI. V-29.718.095<br>
-        Br. Henry Hernandez. CI. V-30.808.485<br>
-        Profesor: Roberto Di Michele<br>
-        Materia: Backend
-    </div>
-<%- include('layout/footer') %>
+   

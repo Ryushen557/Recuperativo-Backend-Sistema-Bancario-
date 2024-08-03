@@ -1,73 +1,65 @@
 const CooperativaModel = require('../models/cooperativas');
 
 class CooperativaController {
-    AñadirCooperativa(req, res) {
-        const { id, nombre, usuariosDeCooperativa } = req.body;
-        const nuevaCooperativa = { id: parseInt(id), nombre, usuariosDeCooperativa: usuariosDeCooperativa || [] };
-        CooperativaModel.añadirCooperativa(nuevaCooperativa)
-            .then(results => res.status(201).json({ mensaje: 'Se ha añadido la cooperativa', cooperativa: nuevaCooperativa }))
-            .catch(error => res.status(500).json({ error: error.message }));
+    ObtenerCooperativas(){
+        return new Promise((resolve, reject) => {
+             CooperativaModel.ObtenerCooperativas()
+             .then((result) => {
+                resolve(result)
+             }).catch((err) => {
+                reject(err)
+             });
+        })
     }
-
-    EditarCooperativa(req, res) {
-        const { id } = req.params;
-        const { nombre} = req.body;
-        CooperativaModel.editarCooperativa(id, { nombre })
-            .then(results => res.json({ mensaje: 'Cooperativa actualizada', usuario: { id, nombre, email } }))
-            .catch(error => res.status(500).json({ error: error.message }));
+    Agregar(datos){
+        return new Promise((resolve, reject) => {
+            CooperativaModel.Agregar(datos)
+            .then(() => {
+                resolve()
+            }).catch((err) => {
+                reject(err)
+            });
+        })
     }
-    BorrarCooperativa(req, res) {
-        const { id } = req.params;
-        CooperativaModel.borrarCooperativa(id)
-            .then(results => res.json({ mensaje: 'Cooperativa eliminada' }))
-            .catch(error => res.status(500).json({ error: error.message }));
+    Editar(id,datos){
+        return new Promise((resolve, reject) => {
+            CooperativaModel.Editar(id,datos)
+            .then((result) => {
+                resolve(result)
+            }).catch((err) => {
+                reject(err)
+            });
+        })
     }
-    
-    EliminarUsuarioDeCooperativa(req, res) {
-        const { cooperativaId, usuarioId } = req.params;
-        CooperativaModel.eliminarUsuarioDeCooperativa(cooperativaId, usuarioId)
-            .then(results => res.json({ mensaje: 'Usuario eliminado de la cooperativa' }))
-            .catch(error => res.status(500).json({ error: error.message }));
+    Eliminar(id){
+        return new Promise((resolve, reject) => {
+            CooperativaModel.Eliminar(id)
+            .then(() => {
+                resolve()
+            }).catch((err) => {
+                reject(err)
+            });
+        })
     }
-
-    RelacionarUsuarioConCooperativa(req, res) {
-        const { cooperativaId, usuarioId } = req.params;
-        CooperativaModel.relacionarUsuarioConCooperativa(cooperativaId, usuarioId)
-            .then(results => res.json({ mensaje: 'Usuario añadido a la cooperativa' }))
-            .catch(error => res.status(500).json({ error: error.message }));
+    Unirse(id,datos){
+        return new Promise((resolve, reject) => {
+            CooperativaModel.Unirse(id,datos)
+            .then((result) => {
+                resolve(result)
+            }).catch((err) => {
+                reject(err)
+            });
+        })
     }
-
-    ObtenerTodasCooperativas(req, res) {
-        CooperativaModel.obtenerTodasCooperativas()
-            .then(cooperativas => res.render('cooperativas', { cooperativas }))
-            .catch(error => res.status(500).json({ error: error.message }));
-    }
-
-    ObtenerDetallesCooperativa(req, res) {
-        const { id } = req.params;
-        CooperativaModel.obtenerDetallesCooperativa(id)
-            .then(cooperativa => {
-                if (cooperativa) {
-                    res.render('detalleCooperativa', { cooperativa });
-                } else {
-                    res.status(404).json({ mensaje: 'No se encontró la cooperativa en la base de datos' });
-                }
-            })
-            .catch(error => res.status(500).json({ error: error.message }));
-    }
-
-    ObtenerMovimientos(req, res) {
-        const { cooperativaId } = req.params;
-        CooperativaModel.obtenerMovimientos(cooperativaId)
-            .then(movimientos => res.json(movimientos))
-            .catch(error => res.status(500).json({ error: error.message }));
-    }
-
-    ObtenerTurnosCobro(req, res) {
-        const { cooperativaId } = req.params;
-        CooperativaModel.obtenerTurnosCobro(cooperativaId)
-            .then(turnos => res.json(turnos))
-            .catch(error => res.status(500).json({ error: error.message }));
+    CoopUsuario(id){
+        return new Promise((resolve, reject) => {
+            CooperativaModel.CoopUsuario(id)
+            .then((result) => {
+                resolve(result)
+            }).catch((err) => {
+                reject(err)
+            });
+        })
     }
 }
 module.exports = new CooperativaController();

@@ -1,151 +1,129 @@
 const pool = require('../conexion');
+const jwt = require("jsonwebtoken");
 
 class CooperativaModel {
-    static añadirCooperativa(cooperativa) {
+    ObtenerCooperativas(){
         return new Promise((resolve, reject) => {
-            const { id, nombre, usuariosDeCooperativa } = cooperativa;
-            pool.query('INSERT INTO cooperativas (id, nombre) VALUES (?, ?)', [id, nombre], (error, results) => {
-                if (error) {
-                    return reject(error);
+            pool.query('SELECT * FROM cooperativa',function(err,result){
+                if(err){
+                    reject(err)
+                }else{
+                    resolve(result)
                 }
-                const cooperativaId = results.insertId;
-                if (usuariosDeCooperativa && usuariosDeCooperativa.length > 0) {
-                    const usuarioPromises = usuariosDeCooperativa.map(usuarioId => 
-                        new Promise((resolve, reject) => {
-                            pool.query('UPDATE usuarios SET cooperativaId = ? WHERE id = ?', [cooperativaId, usuarioId], (error, results) => {
-                                if (error) {
-                                    return reject(error);
-                                }
-                                resolve(results);
-                            });
-                        })
-                    );
-                    Promise.all(usuarioPromises)
-                        .then(() => resolve(results))
-                        .catch(reject);
+            })
+        })
+    }    
+    Agregar(datos) {
+        return new Promise((resolve, reject) => {
+          let nombre = datos.nombre
+          let pago = datos.pagoTotal;
+          let fecha = datos.fechaPago;
+          let pagoMensual = datos.pagoMensual;
+          let duracion = datos.duracion;
+          if (pagoMensual * duracion != pago) {
+            reject(new Error("El pago total debecoincidir con la suma de los pagos mensuales"));
+          } else {
+                  pool.query(`INSERT INTO cooperativa (nombre,pago, fechaPago, pagoMensual,duracion) VALUES ('${nombre}','${pago}','${fecha}','${pagoMensual}', '${duracion}')`, function (err, result) {
+                    if (err) {
+                      reject(err);
+                    } else {
+                      resolve();
+                    }
+                  });
+                 }
+            });
+          }
+          Editar(id, datos) {
+            return new Promise((resolve, reject) => {
+                console.log(id,datos)
+              let nombre = datos.nombre
+              let pago = datos.pago;
+              let fecha = datos.fecha;
+              let pagoMensual = datos.pagoMensual;
+              let duracion = datos.duracion;
+              if (pagoMensual * duracion != pago) {
+                reject(new Error("El pago total debecoincidir con la suma de los pagos"))
+              }else{
+                pool.query(`UPDATE cooperativa SET nombre = '${nombre}',pago ='${pago}', fechaPago = '${fecha}', pagoMensual = '${pagoMensual}', duracion = '${duracion}'  WHERE id = ${id} `, function (err, result) {
+                    if (err) {
+                      reject(err);
+                    } else {
+                      resolve(result);
+                    }
+                  });
+              }
+            });
+          }
+          Eliminar(id) {
+            return new Promise((resolve, reject) => {
+              pool.query(`DELETE FROM cooperativa WHERE id = ${id} `, function (err, result) {
+                if (err) {
+                  reject(err);
                 } else {
-                    resolve(results);
+                  resolve();
                 }
+              });
             });
-        });
-    }
-    
-    static editarCooperativa(id, cooperativa) {
-        return new Promise((resolve, reject) => {
-            const { nombre } = cooperativa;
-            pool.query('UPDATE cooperativas SET nombre = ? WHERE id = ?', [nombre, id], (error, results) => {
-                if (error) {
-                    return reject(error);
+          }
+          Unirse(ID, datos) {
+            return new Promise((resolve, reject) => {
+              let usuario = jwt.decode(ID, process.env.AUTENTICADOR);
+              let idcoop = datos.id;
+              pool.query(`SELECT * FROM cuenta WHERE idUsuario = ${usuario.id}`, function (err, result) {
+                if (err) {
+                  reject(err);
+                } else {
+                  let resultUser = result;
+                  pool.query(`SELECT * FROM cooperativa WHERE id = '${idcoop}'`, function (err, result) {
+                    if (err) {
+                      reject(err);
+                    } else {
+                      let resultCoop = result;
+                      pool.query(`SELECT * FROM coopCuenta WHERE idCooperativa = ${idcoop} AND idUsuario = ${usuario.id} `, function (err, result) {
+                        if (err) {
+                          reject(err);
+                        } else {
+                          if (result.length > 0) {
+                            reject(new Error("Ya eres parte de esta cooperativa"));
+                          } else {
+                            pool.query(`INSERT INTO coopCuenta (idCuenta, idCooperativa, idUsuario) VALUES (${resultUser[0].id},${resultCoop[0].id},${resultUser[0].idUsuario})`, function (err, result) {
+                              if (err) {
+                                reject(err);
+                              } else {
+                                pool.query(`UPDATE cuenta SET cantidad = cantidad + ${resultCoop[0].pago} WHERE idUsuario = ${usuario.id} AND tipoCuenta = 'corriente'`, function (err, result) {
+                                  if (err) {
+                                    reject(err);
+                                  } else {
+                                    resolve();
+                                  }
+                                });
+                              }
+                            });
+                          }
+                        }
+                      });
+                    }
+                  });
                 }
-                resolve(results);
+              });
             });
-        });
-    }
-
-    static borrarCooperativa(id) {
-        return new Promise((resolve, reject) => {
-            pool.query('DELETE FROM cooperativas WHERE id = ?', [id], (error, results) => {
-                if (error) {
-                    return reject(error);
+          }
+          CoopUsuario(idUsuario) {
+            return new Promise((resolve, reject) => {
+              let id = jwt.decode(idUsuario, process.env.AUTENTICADOR);
+              let query = `SELECT cooperativa.id AS id, cooperativa.fechaPago AS fecha, cooperativa.pagoMensual AS pago,cooperativa.nombre AS nombre FROM cooperativa JOIN coopCuenta ON coopCuenta.idCooperativa = cooperativa.id  WHERE idUsuario = ${id.id} `;
+              pool.query(query, function (err, result) {
+                if (err) {
+                  reject(err);
+                } else {
+                  if (result.length > 0) {
+                    resolve(result);
+                  } else {
+                    reject();
+                  }
                 }
-                resolve(results);
+              });
             });
-        });
-    }
-
-    static eliminarUsuarioDeCooperativa(cooperativaId, usuarioId) {
-        return new Promise((resolve, reject) => {
-            pool.query('UPDATE usuarios SET cooperativaId = NULL WHERE id = ? AND cooperativaId = ?', [usuarioId, cooperativaId], (error, results) => {
-                if (error) {
-                    return reject(error);
-                }
-                resolve(results);
-            });
-        });
-    }
-
-    static relacionarUsuarioConCooperativa(cooperativaId, usuarioId) {
-        return new Promise((resolve, reject) => {
-            pool.query('UPDATE usuarios SET cooperativaId = ? WHERE id = ?', [cooperativaId, usuarioId], (error, results) => {
-                if (error) {
-                    return reject(error);
-                }
-                resolve(results);
-            });
-        });
-    }
-
-    static obtenerTodasCooperativas() {
-        return new Promise((resolve, reject) => {
-            pool.query('SELECT * FROM cooperativas', (error, results) => {
-                if (error) {
-                    return reject(error);
-                }
-                resolve(results);
-            });
-        });
-    }
-
-    static obtenerDetallesCooperativa(id) {
-        return new Promise((resolve, reject) => {
-            pool.query('SELECT * FROM cooperativas WHERE id = ?', [id], (error, results) => {
-                if (error) {
-                    return reject(error);
-                }
-                resolve(results[0]);
-            });
-        });
-    }
-
-    static obtenerResumen() {
-        return new Promise((resolve, reject) => {
-            pool.query(`
-                SELECT 
-                    (SELECT COUNT(*) FROM ahorros) AS totalAhorros, 
-                    (SELECT COUNT(*) FROM prestamos) AS totalPrestamos, 
-                    (SELECT COUNT(*) FROM usuarios) AS totalUsuarios 
-                FROM DUAL`, (error, results) => {
-                if (error) {
-                    return reject(error);
-                }
-                resolve(results[0]);
-            });
-        });
-    }
-
-    static obtenerMovimientos(cooperativaId) {
-        return new Promise((resolve, reject) => {
-            const query = `
-                SELECT u.nombre, c.monto, c.fechaPago, 
-                       CASE WHEN c.fechaPago <= c.fechaLimite THEN 'Pagado a tiempo' ELSE 'Moroso' END AS estado
-                FROM cuotas c
-                JOIN usuarios u ON c.usuarioId = u.id
-                WHERE c.cooperativaId = ?
-                ORDER BY c.fechaPago DESC`;
-            pool.query(query, [cooperativaId], (error, results) => {
-                if (error) {
-                    return reject(error);
-                }
-                resolve(results);
-            });
-        });
-    }
-
-    static obtenerTurnosCobro(cooperativaId) {
-        return new Promise((resolve, reject) => {
-            const query = `
-                SELECT u.nombre, c.monto, c.turnoCobro, c.estado
-                FROM turnos c
-                JOIN usuarios u ON c.usuarioId = u.id
-                WHERE c.cooperativaId = ?
-                ORDER BY c.turnoCobro ASC`;
-            pool.query(query, [cooperativaId], (error, results) => {
-                if (error) {
-                    return reject(error);
-                }
-                resolve(results);
-            });
-        });
-    }
+          }
 }
-module.exports = CooperativaModel;
+module.exports = new CooperativaModel();

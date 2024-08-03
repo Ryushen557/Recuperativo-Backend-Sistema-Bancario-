@@ -1,20 +1,68 @@
 const express = require('express');
 const router = express.Router();
 const cooperativaController = require('../controllers/cooperativas');
+const usuarioController = require("../controllers/usuarios");
+const usuarios = require('../models/usuarios');
 
-router.get('/', (req, res) => cooperativaController.ObtenerTodasCooperativas(req, res));
-router.get('/resumen', (req, res) => cooperativaController.ObtenerResumen(req, res));
-router.get('/:id', (req, res) => cooperativaController.ObtenerDetallesCooperativa(req, res));
 
-router.post('/', (req, res) => cooperativaController.AñadirCooperativa(req, res));
-router.post('/:cooperativaId/usuarios/:usuarioId', (req, res) => cooperativaController.RelacionarUsuarioConCooperativa(req, res));
+router.get("/",(req,res)=>{
+    let user = null
+    usuarioController.Decodificar(req.cookies.token)
+    .then((result) => {
+        user = result
+        cooperativaController.ObtenerCooperativas()
+        .then((coop) => {
+            cooperativaController.CoopUsuario(req.cookies.token)
+            .then((coopUser) => {
+                console.log(coopUser)
+                res.render("cooperativas",{cooperativas:coop,Usuario:user,coopUser:coopUser})
+            }).catch((err) => {
+                res.render("error", { message: err.message, error: err });
+            });
+        }).catch((err) => {
+            res.render("error", { message: err.message, error: err });
+        });
+    }).catch((err) => {
+        res.render("error", { message: err.message, error: err });
+    });
+})
+router.post("/",(req,res)=>{
+    if(req.body.nombre){
+        cooperativaController.Agregar(req.body)
+        .then(() => {
+            res.redirect("/cooperativas")
+        }).catch((err) => {
+            res.render("error", { message: err.message, error: err });
+    
+        });
+    }else{
+        cooperativaController.Unirse(req.cookies.token,req.body)
+        .then(() => {
+            res.redirect("/cooperativas")
+        }).catch((err) => {
+            res.render("error", { message: err.message, error: err });
 
-router.put('/:id', (req, res) => cooperativaController.EditarCooperativa(req, res));
-
-router.delete('/:id', (req, res) => cooperativaController.BorrarCooperativa(req, res));
-router.delete('/:cooperativaId/usuarios/:usuarioId', (req, res) => cooperativaController.EliminarUsuarioDeCooperativa(req, res));
-
-router.get('/:cooperativaId/movimientos', (req, res) => cooperativaController.ObtenerMovimientos(req, res));
-router.get('/:cooperativaId/turnos', (req, res) => cooperativaController.ObtenerTurnosCobro(req, res));
+        });
+    }
+    
+})
+router.put("/editar/:id",(req,res)=>{
+    console.log("LLegue")
+    cooperativaController.Editar(req.params.id,req.body)
+    .then((result) => {
+        console.log(result)
+        res.redirect("/cooperativas")
+    }).catch((err) => {
+        res.render("error", { message: err.message, error: err });
+    });
+})
+router.delete("/borrar/:id",(req,res)=>{
+    cooperativaController.Eliminar(req.params.id)
+    .then(() => {
+        res.redirect("/cooperativas")
+    }).catch((err) => {
+        res.render("error", { message: err.message, error: err });
+    });
+})
 
 module.exports = router;
