@@ -51,6 +51,26 @@ class UsuarioController {
 
         })
     }
+    CerrarSesion(cookie){
+        return new Promise((resolve, reject) => {
+            UsuarioModel.CerrarSesion(cookie)
+            .then(() => {
+                resolve()
+            }).catch((err) => {
+                reject(err)
+            });
+        })
+    }
+    Editar(id,datos){
+        return new Promise((resolve, reject) => {
+            UsuarioModel.Editar(id,datos)
+            .then(() => {
+                resolve()
+            }).catch((err) => {
+                reject(err)
+            });
+        })
+    }
 }
 
 module.exports = new UsuarioController();

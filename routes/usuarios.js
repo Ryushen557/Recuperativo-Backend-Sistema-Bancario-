@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const usuarioController = require("../controllers/usuarios");
+const usuarios = require("../models/usuarios");
 
 router.get("/", (req, res) =>
     res.render("index")
@@ -28,10 +29,37 @@ router.get("/Registro",(req,res)=>{
 })
 router.post("/Registro",(req,res)=>{
     usuarioController.Registrarse(req.body)
-    .then((result) => {
-        res.redirect("/usuarios/Inicio")
+    .then(() => {
+            res.redirect("/usuarios")
     }).catch((err) => {
         console.error(err)
+        res.render("error", { message: err.message, error: err });
+    })
+    })
+router.get("/cerrar",(req,res)=>{
+    usuarioController.CerrarSesion(req.cookies.token)
+    .then(() => {
+        res.clearCookie("token")
+        res.redirect("/usuarios")
+    }).catch((err) => {
+        res.render("error", { message: err.message, error: err });
+    });
+})
+router.get("/editar",(req,res)=>{
+    usuarioController.Decodificar(req.cookies.token)
+    .then((result) => {
+        res.render("editarUsuario",{usuario:result})
+
+    }).catch((err) => {
+        res.render("error", { message: err.message, error: err });
+
+    });
+})
+router.put("/editar/:id",(req,res)=>{
+    usuarioController.Editar(req.params.id,req.body)
+    .then((result) => {
+        res.redirect("/usuarios")
+    }).catch((err) => {
         res.render("error", { message: err.message, error: err });
     });
 })

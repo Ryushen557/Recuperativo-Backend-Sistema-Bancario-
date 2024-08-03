@@ -7,6 +7,7 @@ const usuarios = require('../models/usuarios');
 
 router.get("/",(req,res)=>{
     let user = null
+    let coopUsers = []
     usuarioController.Decodificar(req.cookies.token)
     .then((result) => {
         user = result
@@ -14,11 +15,14 @@ router.get("/",(req,res)=>{
         .then((coop) => {
             cooperativaController.CoopUsuario(req.cookies.token)
             .then((coopUser) => {
-                console.log(coopUser)
-                res.render("cooperativas",{cooperativas:coop,Usuario:user,coopUser:coopUser})
+                coopUsers = coopUser
             }).catch((err) => {
-                res.render("error", { message: err.message, error: err });
-            });
+                console.error(err)
+            })
+            .finally(()=>{
+                res.render("cooperativas",{cooperativas:coop,Usuario:user,coopUser:coopUsers})
+
+            })
         }).catch((err) => {
             res.render("error", { message: err.message, error: err });
         });

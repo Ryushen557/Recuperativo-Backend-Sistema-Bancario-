@@ -131,6 +131,42 @@ class UsuariosModel {
       }
     });
   }
+  CerrarSesion(cookie) {
+    return new Promise((resolve, reject) => {
+      if (cookie) {
+        resolve();
+      } else {
+        reject(new Error("No hay una sesion iniciada"));
+      }
+    });
+  }
+  Editar(usuarioid, datos) {
+    return new Promise(async (resolve, reject) => {
+      pool.query(`SELECT clave FROM usuarios WHERE id = '${usuarioid}'`, async function (err, result) {
+        if (err) {
+          reject(err);
+        } else {
+          let claveEncriptada = result[0].clave;
+          let claveDesencriptada = await bcryptjs.compare(
+            datos.contraseñaVieja,
+            claveEncriptada
+          );
+          if (claveDesencriptada) {
+            let claveCodificada = await bcryptjs.hash(datos.contraseñaNueva, 8);
+            pool.query(`UPDATE usuarios SET nombre = '${datos.nombre}', usuario = '${datos.usuario}',clave = '${claveCodificada}',email = '${datos.email}' WHERE id = '${usuarioid}'`, function (err, result) {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(result);
+              }
+            });
+          } else {
+            reject("Las contraseñas no coinciden");
+          }
+        }
+      });
+    });
+  }
 
 }
 

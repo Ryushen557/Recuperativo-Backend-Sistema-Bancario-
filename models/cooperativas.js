@@ -119,7 +119,7 @@ class CooperativaModel {
                   if (result.length > 0) {
                     resolve(result);
                   } else {
-                    reject();
+                    reject(new Error("No perteneces a ninguna cooperativa"));
                   }
                 }
               });

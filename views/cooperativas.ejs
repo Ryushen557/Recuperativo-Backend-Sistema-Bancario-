@@ -5,15 +5,24 @@
     <div class="nav">
         <a href="/usuarios/Inicio">Inicio</a>
     </div>
-    <div class="form-container">
+    <% if(coopUser.length>0){%>
+        <div class="form-container">
 
-        <p>Eres miembro de las cooperativas <%coopUser.forEach((nombre)=>{%>
-            <%= nombre.nombre %>
-       <% }) %> </p>
-       <p>Tus fechas de pago son los: <%coopUser.forEach((nombre)=>{%>
-        <%= nombre.fecha %> de cada mes 
-    <% }) %> </p>
+            <p>Eres miembro de las cooperativas <%coopUser.forEach((nombre)=>{%>
+                <%= nombre.nombre %>
+           <% }) %> </p>
+           <p>Tus fechas de pago son los: <%coopUser.forEach((nombre)=>{%>
+            <%= nombre.fecha %> de cada mes 
+        <% }) %> </p>
+        </div>
+ <%   }else{%>
+    <div class="form-container">
+        <p>
+            No eres miembro de ninguna cooperativa
+        </p>
     </div>
+ <%} %>
+    
     <% if(Usuario.rol==="admin"){%>
         <div class="form-container">
             <h2>Agregar Nueva Cooperativa</h2>
