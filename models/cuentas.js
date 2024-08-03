@@ -106,12 +106,10 @@ class CuentasModel {
                                                 reject(err)
                                             }else{
                                                 if(result.length>0){
-                                                    let cantidadDestino = Math.floor(result[0].cantidadDestino) + Number(monto)
+                                                    let cantidadDestino = Math.floor(result[0].cantidadDestino) +Number(monto)
                                                     console.log(cantidadDestino)
-                                                    console.log(monto)
                                                     let cantidadOrigen = cuenta.cantidad - monto
-                                                    console.log(cantidadOrigen)
-                                                    pool.query(`UPDATE cuenta SET cantidad = ${cantidadDestino} WHERE numeroCuenta = '${cuentaDestino}'`,function(err,result){
+                                                    pool.query(`UPDATE cuenta SET cantidad = ${cantidadDestino} WHERE numeroCuenta = ${cuentaDestino}`,function(err,result){
                                                         if(err){
                                                             reject(err)
                                                         }else{
@@ -172,6 +170,17 @@ class CuentasModel {
             })
         })
      }   
+     ObtenerCuentas(){
+        return new Promise((resolve, reject) => {
+            pool.query("SELECT * FROM cuenta",(err,result)=>{
+                if(err){
+                    reject(err)
+                }else{
+                    resolve(result)
+                }
+            })
+        })
+     }
 }
 
 module.exports = new CuentasModel();

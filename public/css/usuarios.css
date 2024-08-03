@@ -231,7 +231,7 @@ li:hover {
     width: 100%;
     max-width: 600px;
 }
-.nav a {
+.nav a, .link  {
     text-decoration: none;
     color: #fff;
     background-color: #00796b;
@@ -249,7 +249,7 @@ li:hover {
     font-size: 14px;
     color: #004d40;
 }
-.menu a {
+.menu a{
     text-decoration: none;
     color: #fff;
     background-color: #00796b;

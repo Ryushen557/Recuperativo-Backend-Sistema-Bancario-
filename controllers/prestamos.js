@@ -61,5 +61,15 @@ class prestamoController{
             });
         })
     }
+    Pagar(id){
+        return new Promise((resolve, reject) => {
+            prestamoModels.Pagar(id)
+            .then((result) => {
+                resolve(result)
+            }).catch((err) => {
+                reject(err)
+            });
+        })
+    }
 }
 module.exports = new prestamoController()

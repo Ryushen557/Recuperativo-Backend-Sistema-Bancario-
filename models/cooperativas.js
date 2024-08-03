@@ -21,7 +21,7 @@ class CooperativaModel {
           let pagoMensual = datos.pagoMensual;
           let duracion = datos.duracion;
           if (pagoMensual * duracion != pago) {
-            reject(new Error("El pago total debecoincidir con la suma de los pagos mensuales"));
+            reject(new Error("El pago total debe coincidir con la suma de los pagos mensuales"));
           } else {
                   pool.query(`INSERT INTO cooperativa (nombre,pago, fechaPago, pagoMensual,duracion) VALUES ('${nombre}','${pago}','${fecha}','${pagoMensual}', '${duracion}')`, function (err, result) {
                     if (err) {
@@ -111,7 +111,7 @@ class CooperativaModel {
           CoopUsuario(idUsuario) {
             return new Promise((resolve, reject) => {
               let id = jwt.decode(idUsuario, process.env.AUTENTICADOR);
-              let query = `SELECT cooperativa.id AS id, cooperativa.fechaPago AS fecha, cooperativa.pagoMensual AS pago,cooperativa.nombre AS nombre FROM cooperativa JOIN coopCuenta ON coopCuenta.idCooperativa = cooperativa.id  WHERE idUsuario = ${id.id} `;
+              let query = `SELECT cooperativa.id AS id, cooperativa.fechaPago AS fecha, cooperativa.pagoMensual AS pago,cooperativa.nombre AS nombre, coopCuenta.estado AS estado FROM cooperativa JOIN coopCuenta ON coopCuenta.idCooperativa = cooperativa.id  WHERE idUsuario = ${id.id} `;
               pool.query(query, function (err, result) {
                 if (err) {
                   reject(err);
@@ -119,11 +119,40 @@ class CooperativaModel {
                   if (result.length > 0) {
                     resolve(result);
                   } else {
-                    reject(new Error("No perteneces a ninguna cooperativa"));
+                    reject();
                   }
                 }
               });
             });
+          }
+          Pagar(id){
+            return new Promise((resolve, reject) => {
+              
+              let usuario = jwt.decode(id, process.env.AUTENTICADOR);
+              pool.query(`SELECT cooperativa.pagoMensual AS monto, coopCuenta.estado AS estado FROM cooperativa JOIN coopCuenta ON coopCuenta.idCooperativa = cooperativa.id  WHERE idUsuario = ${usuario.id}`,(err,result)=>{
+                if(err){
+                  reject(err)
+                }else{
+                  let montoTotal = 0
+                  for(let i =0;i<result.length;i++){
+                    montoTotal = result[i].monto + Math.floor(result[i].monto)
+                  }
+                  pool.query(`UPDATE cuenta SET cantidad = cantidad - ${montoTotal} WHERE idUsuario = ${usuario.id} AND tipoCuenta = "Corriente"`,(err,result)=>{
+                    if(err){
+                      reject(err)
+                    }else{
+                      pool.query(`UPDATE coopCuenta SET estado = "Pagado" WHERE idUsuario = ${usuario.id}`,(err,result)=>{
+                        if(err){
+                          reject(err)
+                        }else{
+                          resolve()
+                        }
+                      })
+                    }
+                  } )
+                }
+              })
+            })
           }
 }
 module.exports = new CooperativaModel();

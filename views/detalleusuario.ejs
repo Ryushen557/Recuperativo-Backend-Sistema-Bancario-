@@ -15,6 +15,15 @@
             <p> Usuario: <%= usuario.usuario %></p>
             <p> Email: <%= usuario.email %></p>
             <p> Rol: <%= usuario.rol %></p>
+            <% const cuentasUsuario = cuentas.filter(c => c.idUsuario === usuario.id) %>
+            <% if (cuentasUsuario.length > 0) { %>
+              <h2>Cuentas:</h2>
+              <% cuentasUsuario.forEach(cuenta => { %>
+                <p>Tipo: <%= cuenta.tipoCuenta%></p>
+                <p>Cuenta: <%= cuenta.numeroCuenta %></p>
+                <p>Saldo: <%= cuenta.cantidad %></p>
+              <% }) %>
+            <% } %>
             <button class="delete-button" id="cerrar" onclick="deleteuser('<%= usuario.id %>')">Eliminar</button>
             </div>
       <%  }) %>

@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const usuarioController = require("../controllers/usuarios");
+const cuentas = require("../controllers/cuentas");
+const usuarios = require("../models/usuarios");
 
 router.get("/", (req, res) =>
     res.render("index")
@@ -63,9 +65,19 @@ router.put("/editar/:id",(req,res)=>{
     });
 })
 router.get("/lista",(req,res)=>{
+    let usuarios = null
+    let cuenta = null
     usuarioController.Obtener()
     .then((result) => {
-        res.render("detalleUsuario",{usuarios:result})
+        usuarios=result
+        cuentas.ObtenerCuentas()
+        .then((result2) => {
+            cuenta = result2
+            res.render("detalleUsuario",{usuarios:result,cuentas:cuenta})
+        }).catch((err) => {
+            res.render("error", { message: err.message, error: err });
+
+        });
     }).catch((err) => {
         res.render("error", { message: err.message, error: err });
     });

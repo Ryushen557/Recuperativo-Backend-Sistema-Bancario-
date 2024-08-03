@@ -51,6 +51,16 @@ class CuentasController {
             });
         })
     }
+    ObtenerCuentas(){
+        return new Promise((resolve, reject) => {
+            CuentasModel.ObtenerCuentas()
+            .then((result) => {
+                resolve(result)
+            }).catch((err) => {
+                reject(err)
+            });
+        })
+    }
 }
    
 

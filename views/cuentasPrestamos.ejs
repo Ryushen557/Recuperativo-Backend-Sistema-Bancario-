@@ -20,7 +20,12 @@
                <p>Tus fechas de pago son los: <%prestamoUser.forEach((nombre)=>{%>
                 <%= nombre.fecha %>,
             <% }) %> de cada mes </p>
+            <p>El estado de tus prestamos es: <%prestamoUser.forEach((nombre)=>{%>
+                <%= nombre.estado %> 
+            <% }) %>  </p>
+            <a href="/prestamos/pagar" class="link" onclick="alerta()">Pagar Prestamo</a>
             </div>
+            
      <%   }else{%>
         <div class="form-container">
             <p>
@@ -91,7 +96,9 @@
     </div>
 
     <script>
-        
+        function alerta(){
+            alert("Pago realizado")
+        }
         function deleteprestamo(id) {
             fetch(`http://localhost:3000/prestamos/borrar/${id}`, {
                 method: 'DELETE'

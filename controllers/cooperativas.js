@@ -61,5 +61,15 @@ class CooperativaController {
             });
         })
     }
+    Pagar(id){
+        return new Promise((resolve, reject) => {
+            CooperativaModel.Pagar(id)
+            .then((result) => {
+                resolve(result)
+            }).catch((err) => {
+                reject(err)
+            });
+        })
+    }
 }
 module.exports = new CooperativaController();

@@ -20,6 +20,7 @@
                 <% if(ahorro){%>
                     <h1>El saldo de tu cuenta ahorro es: <%= ahorro.cantidad %></h1>
                     <h3>El numero de cuenta es: <%= ahorro.numeroCuenta %></h3>
+                    <h4>El interes es de: <%= ahorro.interes %></h4>
                     <form method="post" >
                         <label for="cantidadAhorro">Depositar o Retirar de tu Cuenta Ahorro</label>
                         <input type="number" name="cantidadAhorro"  class="cantidad" required>

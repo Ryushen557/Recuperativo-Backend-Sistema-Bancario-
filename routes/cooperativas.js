@@ -68,5 +68,13 @@ router.delete("/borrar/:id",(req,res)=>{
         res.render("error", { message: err.message, error: err });
     });
 })
+router.get("/pagar",(req,res)=>{
+    cooperativaController.Pagar(req.cookies.token)
+    .then(() => {
+        res.redirect("/cooperativas")
+    }).catch((err) => {
+        res.render("error", { message: err.message, error: err });
 
+    });
+})
 module.exports = router;

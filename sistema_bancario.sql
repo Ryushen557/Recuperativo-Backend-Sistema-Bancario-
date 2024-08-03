@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 03-08-2024 a las 22:13:20
+-- Tiempo de generación: 04-08-2024 a las 00:28:25
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -31,7 +31,8 @@ CREATE TABLE `coopcuenta` (
   `id` int(11) NOT NULL,
   `idUsuario` int(11) NOT NULL,
   `idCooperativa` int(11) NOT NULL,
-  `idCuenta` int(11) NOT NULL
+  `idCuenta` int(11) NOT NULL,
+  `estado` varchar(15) NOT NULL DEFAULT 'Deuda'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -87,7 +88,8 @@ CREATE TABLE `prestamousuario` (
   `id` int(11) NOT NULL,
   `idUsuario` int(11) NOT NULL,
   `idCuenta` int(11) NOT NULL,
-  `idPrestamo` int(11) NOT NULL
+  `idPrestamo` int(11) NOT NULL,
+  `estado` varchar(18) NOT NULL DEFAULT 'Deuda'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------

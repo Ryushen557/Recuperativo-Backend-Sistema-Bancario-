@@ -11,10 +11,14 @@
     
                 <p>Eres miembro de las cooperativas <%coopUser.forEach((nombre)=>{%>
                     <%= nombre.nombre %>
-               <% }) %> </p>
-               <p>Tus fechas de pago son los: <%coopUser.forEach((nombre)=>{%>
-                <%= nombre.fecha %> 
-            <% }) %>de cada mes  </p>
+                    <% }) %> </p>
+                <p>Tus fechas de pago son los: <%coopUser.forEach((nombre)=>{%>
+                 <%= nombre.fecha %> 
+             <% }) %>de cada mes  </p>
+             <p>El estado de tus cooperativas es: <%coopUser.forEach((nombre)=>{%>
+                <%= nombre.estado %> 
+            <% }) %>  </p>
+             <a href="/cooperativas/pagar" class="link" onclick="alerta()">Pagar Cooperativa</a>
             </div>
      <%   }else{%>
         <div class="form-container">
@@ -95,7 +99,9 @@
     </div>
 
     <script>
-        
+        function alerta(){
+            alert("Pago realizado")
+        }
         function deleteCoop(id) {
             fetch(`http://localhost:3000/cooperativas/borrar/${id}`, {
                 method: 'DELETE'

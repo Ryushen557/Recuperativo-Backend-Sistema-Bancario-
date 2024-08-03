@@ -4,6 +4,7 @@ const prestamoController = require('../controllers/prestamos')
 const usuarioController = require("../controllers/usuarios");
 
 
+
  router.get("/",(req,res)=>{
      let user = null
      let prestamoUser = []
@@ -67,6 +68,15 @@ router.delete("/borrar/:id",(req,res)=>{
     });
 })
 
+router.get("/pagar",(req,res)=>{
+    prestamoController.Pagar(req.cookies.token)
+    .then(() => {
+        res.redirect("/prestamos")
+    }).catch((err) => {
+        res.render("error", { message: err.message, error: err });
+        console.error(err)
+    });
+})
 
 
 
