@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/usuarios.css">
+</head>
+<body>
+    <div class="container">
+        <div class="menu">
+            <form method="post" class="form-container">
+                <input type="text" placeholder="Nombre" name="nombre" required>
+                <input type="text" placeholder="Nombre de usuario" name="usuario" required>
+                <input type="email" placeholder="Email" name="email" required>
+                <input type="password" placeholder="Contraseña" name="clave" required>
+                <select name="rol">
+                    <option value="usuario">Usuario</option>
+                    <option value="admin">Administrador</option>
+                </select>
+                <button type="submit">Registrarse</button>
+            </form>
+            <a href="/usuarios">Volver</a>
+        </div>
+    </div>
+</body>
+</html>

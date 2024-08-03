@@ -1,10 +1,10 @@
 const mysql = require('mysql2');
-
+require('dotenv').config();
 const pool = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'Sistema_Bancario'
+    host: process.env.BASEDATOSHOST,
+    user: process.env.BASEDATOSUSUARIO,
+    password: process.env.BASEDATOSCLAVE,
+    database: process.env.BASEDATOSNOMBRE
 });
 
 pool.connect(function(error){

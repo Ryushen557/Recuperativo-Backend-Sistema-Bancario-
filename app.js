@@ -3,7 +3,6 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
-const indexRouter = require('./routes/');
 const usuarioRouter = require('./routes/usuarios');
 const cuentaRouter = require('./routes/cuentas');
 const cooperativaRouter = require('./routes/cooperativas');
@@ -19,8 +18,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'views')));
+app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
+
 app.use('/usuarios', usuarioRouter);
 app.use('/cuentas', cuentaRouter); // Asegúrate de que esta línea está presente
 app.use('/cooperativas', cooperativaRouter);
