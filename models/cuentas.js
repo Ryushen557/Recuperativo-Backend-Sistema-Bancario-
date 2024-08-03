@@ -1,143 +1,71 @@
 const pool = require('../conexion');
+const jwt = require('jsonwebtoken')
+const bcryptjs = require('bcryptjs')
 
 class CuentasModel {
-    static añadirCuentaPrestamo(cuenta) {
-        return new Promise((resolve, reject) => {
-            const { id, usuarioId, balance, tasaInteres, fechaProximoPago } = cuenta;
-            pool.query('INSERT INTO prestamos (id, usuarioId, balance, tasaInteres, fechaProximoPago, tipo) VALUES (?, ?, ?, ?, ?, ?)', [id, usuarioId, balance, tasaInteres, fechaProximoPago, 'prestamo'], (error, results) => {
-                if (error) {
-                    return reject(error);
+    CrearCuenta(id,tipo,interes){
+        return new Promise(async(resolve,reject)=>{
+            let numeroCuenta = ""
+            let query = ""
+                 for(let i = 0;i<10;i++){
+                    numeroCuenta +=Math.floor(Math.random() * 10)
                 }
-                resolve(results);
-            });
-        });
-    }
-
-    static añadirCuentaAhorro(cuenta) {
-        return new Promise((resolve, reject) => {
-            const { id, usuarioId, balance, tasaInteres } = cuenta;
-            pool.query('INSERT INTO ahorros (id, usuarioId, balance, tasaInteres, tipo) VALUES (?, ?, ?, ?, ?)', [id, usuarioId, balance, tasaInteres, 'ahorro'], (error, results) => {
-                if (error) {
-                    return reject(error);
+                if(tipo==="Corriente"){
+                    query = `INSERT INTO cuenta (cantidad,idUsuario,tipoCuenta,numeroCuenta) VALUES (0, ${id},'Corriente',${Number(numeroCuenta)})`
+                }else{
+                    query = `INSERT INTO cuenta (cantidad,idUsuario,tipoCuenta,numeroCuenta,interes) VALUES (0,${id},'Ahorro',${Number(numeroCuenta)},${interes})`
                 }
-                resolve(results);
-            });
-        });
-    }
-
-    static editarCuentaPrestamo(id, cuenta) {
-        return new Promise((resolve, reject) => {
-            const { balance, tasaInteres, fechaProximoPago } = cuenta;
-            pool.query('UPDATE prestamos SET balance = ?, tasaInteres = ?, fechaProximoPago = ? WHERE id = ? AND tipo = ?', [balance, tasaInteres, fechaProximoPago, id, 'prestamo'], (error, results) => {
-                if (error) {
-                    return reject(error);
-                }
-                resolve(results);
-            });
-        });
-    }
-
-    static editarCuentaAhorro(id, cuenta) {
-        return new Promise((resolve, reject) => {
-            const { balance, tasaInteres } = cuenta;
-            pool.query('UPDATE ahorros SET balance = ?, tasaInteres = ? WHERE id = ? AND tipo = ?', [balance, tasaInteres, id, 'ahorro'], (error, results) => {
-                if (error) {
-                    return reject(error);
-                }
-                resolve(results);
-            });
-        });
-    }
-
-    static eliminarCuentaPrestamo(id) {
-        return new Promise((resolve, reject) => {
-            pool.query('DELETE FROM prestamos WHERE id = ?', [id], (error, results) => {
-                if (error) {
-                    return reject(error);
-                }
-                resolve(results);
-            });
-        });
-    }
-
-    static eliminarCuentaAhorro(id) {
-        return new Promise((resolve, reject) => {
-            pool.query('DELETE FROM ahorros WHERE id = ?', [id], (error, results) => {
-                if (error) {
-                    return reject(error);
-                }
-                resolve(results);
-            });
-        });
-    }
-
-    static mostrarProximaFechaPago(id) {
-        return new Promise((resolve, reject) => {
-            pool.query('SELECT fechaProximoPago FROM prestamos WHERE id = ?', [id], (error, results) => {
-                if (error) {
-                    return reject(error);
-                }
-                if (results.length === 0) {
-                    return reject(new Error('No se encontró la cuenta de préstamo'));
-                }
-                resolve(results[0].fechaProximoPago);
-            });
-        });
-    }
-
-    static mostrarResumenCuentas() {
-        return new Promise((resolve, reject) => {
-            const query = `
-                SELECT 'prestamo' AS tipo, SUM(balance) AS totalBalance, AVG(tasaInteres) AS promedioTasaInteres FROM prestamos
-                UNION ALL
-                SELECT 'ahorro' AS tipo, SUM(balance) AS totalBalance, AVG(tasaInteres) AS promedioTasaInteres FROM ahorros`;
-            pool.promise().query(query)
-                .then(([results]) => {
-                    const resumen = results.reduce((acc, row) => {
-                        acc[`total${row.tipo.charAt(0).toUpperCase() + row.tipo.slice(1)}`] = row.totalBalance;
-                        acc[`promedioTasaInteres${row.tipo.charAt(0).toUpperCase() + row.tipo.slice(1)}`] = row.promedioTasaInteres;
-                        return acc;
-                    }, {});
-                    resolve(resumen);
+                pool.query(query,function(err,result){
+                    if(err){
+                        reject(err)
+                    }else{
+                        resolve()
+                    }
                 })
-                .catch(error => {
-                    reject(error);
-                });
-        });
+            
+           
+           
+        })
     }
-
-    static mostrarCuentasUsuario(usuarioId) {
-        return new Promise((resolve, reject) => {
-            const query = `
-                SELECT 'prestamo' AS tipo, id, balance, tasaInteres FROM prestamos WHERE usuarioId = ?
-                UNION ALL
-                SELECT 'ahorro' AS tipo, id, balance, tasaInteres FROM ahorros WHERE usuarioId = ?`;
-            pool.query(query, [usuarioId, usuarioId], (error, results) => {
-                if (error) {
-                    return reject(error);
+    ObtenerCuenta(cookie,tipo){
+        return new Promise((resolve,reject)=>{
+            let usuario = jwt.decode(cookie,process.env.AUTENTICADOR)
+            pool.query(`SELECT * FROM cuenta WHERE idUsuario = ${usuario.id} AND tipoCuenta = '${tipo}'`,function(err,result){
+                if(err){
+                    reject(err)
+                }else{
+                    if(result.length===0){
+                        reject(new Error(`No tienes una cuenta del tipo ${tipo}`))
+                    }else{
+                        resolve(result[0])
+                    }
                 }
-                resolve(results);
-            });
-        });
+                
+            })
+        })
     }
-    
-    static obtenerHistorialMovimientos(tipo, id) {
-        return new Promise((resolve, reject) => {
-            const query = `
-                SELECT fecha, monto, balance AS nuevoCapital, 
-                       CASE WHEN tipo = 'prestamo' THEN (monto * tasaInteres / 100) ELSE 0 END AS interesPagado,
-                       CASE WHEN tipo = 'ahorro' THEN monto ELSE 0 END AS capitalAbonado
-                FROM movimientos
-                WHERE tipo = ? AND cuentaId = ?
-                ORDER BY fecha DESC`;
-            pool.query(query, [tipo, id], (error, results) => {
-                if (error) {
-                    return reject(error);
-                }
-                resolve(results);
-            });
-        });
+    ModificarSaldo(cookie,cantidad){
+        return new Promise((resolve,reject)=>{
+            let usuario = jwt.decode(cookie,process.env.AUTENTICADOR)
+            if(cantidad.cantidadCorriente){
+                pool.query(`UPDATE cuenta SET cantidad = cantidad + ${cantidad.cantidadCorriente} WHERE idUsuario = ${usuario.id} AND tipoCuenta = 'Corriente'`,function(err,result){
+                    if(err){
+                        reject(err)
+                    }else{
+                        resolve()
+                    }
+                }) 
+            }else{
+                pool.query(`UPDATE cuenta SET cantidad = cantidad + ${cantidad.cantidadAhorro} WHERE idUsuario = ${usuario.id} AND tipoCuenta = 'Ahorro'`,function(err,result){
+                    if(err){
+                        reject(err)
+                    }else{
+                        resolve()
+                    }
+                }) 
+            }
+        })
     }
 }
 
-module.exports = CuentasModel;
+module.exports = new CuentasModel();

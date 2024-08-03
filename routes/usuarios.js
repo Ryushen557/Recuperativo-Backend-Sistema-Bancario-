@@ -9,14 +9,19 @@ router.post("/",(req,res)=>{
     console.log(req.body)
     usuarioController.IniciarSesion(req.body)
     .then((usuario) => {
-        res.cookie(usuario,"token")
+        res.cookie("token",usuario)
         res.redirect("/usuarios/Inicio")
     }).catch((err) => {
         res.render("error", { message: err.message, error: err });
     });
 })
 router.get("/Inicio",(req,res)=>{
-    res.render("Inicio")
+    usuarioController.Decodificar(req.cookies.token)
+    .then((result) => {
+        res.render("Inicio",{token:result})
+    }).catch((err) => {
+        res.render("error", { message: err.message, error: err });
+    });
 })
 router.get("/Registro",(req,res)=>{
     res.render("Registro")
@@ -26,6 +31,7 @@ router.post("/Registro",(req,res)=>{
     .then((result) => {
         res.redirect("/usuarios/Inicio")
     }).catch((err) => {
+        console.error(err)
         res.render("error", { message: err.message, error: err });
     });
 })

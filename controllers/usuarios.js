@@ -40,6 +40,17 @@ class UsuarioController {
             });
         })
     }
+    Decodificar(token){
+        return new Promise((resolve, reject) => {
+            UsuarioModel.Decodificar(token)
+            .then((result) => {
+                resolve(result)
+            }).catch((err) => {
+                reject(err)
+            });
+
+        })
+    }
 }
 
 module.exports = new UsuarioController();

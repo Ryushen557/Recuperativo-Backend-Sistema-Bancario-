@@ -1,8 +1,7 @@
 const pool = require("../conexion");
-const usuarios = require("../controllers/usuarios");
 const bcryptjs = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-
+const ControladorCuentas = require('../controllers/cuentas')
 class UsuariosModel {
     Registrarse(usuarioPost) {
       return new Promise(async(resolve, reject) => {
@@ -20,9 +19,9 @@ class UsuariosModel {
                 if (err) {
                   reject(err);
                 } else {
-                  if (rol === "usuarios") {
+                  if (rol === "usuario") {
                     let ID = result[0].id;
-                    ControladorCuentas.CrearCorriente(ID)
+                    ControladorCuentas.CrearCuenta(ID,"Corriente")
                       .then(() => {
                         resolve();
                       })
@@ -110,6 +109,26 @@ class UsuariosModel {
           resolve(usuarioBDs);
         }
       );
+    });
+  }
+  Decodificar(token) {
+    return new Promise((resolve, reject) => {
+      if (token) {
+        let usuario = jwt.decode(token, process.env.AUTENTICADOR);
+        pool.query(`SELECT * FROM usuarios WHERE id=${usuario.id}`, function (err, result) {
+          if (err) {
+            reject(err);
+          } else {
+            if (result.length === 0) {
+              reject(new Error("No existe el usuario"));
+            } else {
+              resolve(usuario);
+            }
+          }
+        });
+      }else{
+        reject(new Error("No existe token"));
+      }
     });
   }
 
