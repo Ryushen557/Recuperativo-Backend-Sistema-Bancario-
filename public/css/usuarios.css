@@ -258,3 +258,9 @@ li:hover {
     border-radius: 8px;
     transition: background-color 0.3s;
 }
+#cerrar{
+    background-color: rgb(219, 46, 46);
+}
+#cerrar:hover{
+    background-color: rgb(255, 0, 0);
+}

@@ -84,3 +84,6 @@ h1 {
     cursor: pointer;
     transition: background-color 0.3s;
 }
+.cerrar{
+    background-color: red;
+}

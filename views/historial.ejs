@@ -10,18 +10,26 @@
     <div class="nav">
         <a href="/usuarios/Inicio">Inicio</a>
     </div>
-    <ul id="user-list">
-        <% transferecias.forEach(transferecias => { %>
-            <li>
-                <div class="container">
-                    <p>Usuario De origen: <%= transferecias.usuarioOrigen %> - Usuario Destino: <%= transferecias.usuarioDestino %> </p>
-                    <p>Monto de la Transferencia: <%= transferecias.monto %> - Concepto: <%= transferecias.concepto %> </p>
-                    <p>Cuenta de Origen: <%= transferecias.cuentaOrigen %> - Cuenta Destino: <%= transferecias.cuentaDestino %></p>
-                    <p>Fecha de la transferencia: <%= transferecias.fecha %> - Nº de Operacion: <%= transferecias.operacion %></p>
+    <%if(transferecias.length>0){%>
+        <ul id="user-list">
+            <% transferecias.forEach(transferecias => { %>
+                <li>
+                    <div class="container">
+                        <p>Usuario De origen: <%= transferecias.usuarioOrigen %> - Usuario Destino: <%= transferecias.usuarioDestino %> </p>
+                        <p>Monto de la Transferencia: <%= transferecias.monto %> - Concepto: <%= transferecias.concepto %> </p>
+                        <p>Cuenta de Origen: <%= transferecias.cuentaOrigen %> - Cuenta Destino: <%= transferecias.cuentaDestino %></p>
+                        <p>Fecha de la transferencia: <%= transferecias.fecha %> - Nº de Operacion: <%= transferecias.operacion %></p>
+    
+                    </div>
+                </li>
+                <% })%>
+        </ul>
+   <% }else{%>
+    <div class="form-container">
+        <p>Aun no has realizado operaciones</p>
 
-                </div>
-            </li>
-            <% })%>
-    </ul>
+    </div>
+  <% } %>
+   
 </body>
 </html>

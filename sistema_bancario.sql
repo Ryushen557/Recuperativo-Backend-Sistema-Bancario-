@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 03-08-2024 a las 19:45:37
+-- Tiempo de generación: 03-08-2024 a las 22:13:20
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -67,6 +67,32 @@ CREATE TABLE `cuenta` (
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `prestamos`
+--
+
+CREATE TABLE `prestamos` (
+  `id` int(11) NOT NULL,
+  `monto` int(11) NOT NULL,
+  `interes` decimal(11,2) NOT NULL,
+  `fechaPago` varchar(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `prestamousuario`
+--
+
+CREATE TABLE `prestamousuario` (
+  `id` int(11) NOT NULL,
+  `idUsuario` int(11) NOT NULL,
+  `idCuenta` int(11) NOT NULL,
+  `idPrestamo` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `transferencias`
 --
 
@@ -124,6 +150,21 @@ ALTER TABLE `cuenta`
   ADD KEY `idUsuario` (`idUsuario`);
 
 --
+-- Indices de la tabla `prestamos`
+--
+ALTER TABLE `prestamos`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `prestamousuario`
+--
+ALTER TABLE `prestamousuario`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idUsuario` (`idUsuario`),
+  ADD KEY `idCuenta` (`idCuenta`),
+  ADD KEY `idPrestamo` (`idPrestamo`);
+
+--
 -- Indices de la tabla `transferencias`
 --
 ALTER TABLE `transferencias`
@@ -159,6 +200,18 @@ ALTER TABLE `cuenta`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de la tabla `prestamos`
+--
+ALTER TABLE `prestamos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `prestamousuario`
+--
+ALTER TABLE `prestamousuario`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de la tabla `transferencias`
 --
 ALTER TABLE `transferencias`
@@ -187,6 +240,14 @@ ALTER TABLE `coopcuenta`
 --
 ALTER TABLE `cuenta`
   ADD CONSTRAINT `cuenta_ibfk_1` FOREIGN KEY (`idUsuario`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `prestamousuario`
+--
+ALTER TABLE `prestamousuario`
+  ADD CONSTRAINT `prestamousuario_ibfk_1` FOREIGN KEY (`idPrestamo`) REFERENCES `prestamos` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `prestamousuario_ibfk_2` FOREIGN KEY (`idUsuario`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `prestamousuario_ibfk_3` FOREIGN KEY (`idCuenta`) REFERENCES `cuenta` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

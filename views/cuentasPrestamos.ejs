@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Cuentas de Préstamo</title>
+    <link rel="stylesheet" href="/css/usuarios.css">
+</head>
+<body>
+    <h1>Prestamos - SISTEMA BANCARIO</h1>
+    <div class="nav">
+        <a href="/usuarios/Inicio">Inicio</a>
+    </div>
+    <% if(Usuario.rol==="usuario"){%>
+        <% if(prestamoUser.length>0){%>
+            <div class="form-container">
+    
+                <p>Solicitaste el prestamo Nº: <%prestamoUser.forEach((nombre)=>{%>
+                    <%= nombre.id %>
+               <% }) %> </p>
+               <p>Tus fechas de pago son los: <%prestamoUser.forEach((nombre)=>{%>
+                <%= nombre.fecha %>,
+            <% }) %> de cada mes </p>
+            </div>
+     <%   }else{%>
+        <div class="form-container">
+            <p>
+                No haz solicitado ningun prestamo
+            </p>
+        </div>
+     <%} %>
+    <%} %>
+    <% if(Usuario.rol ==="admin"){%>
+
+        <h2>Agregar Nueva Cuenta de Préstamo</h2>
+        <div class="form-container">
+    
+            <form action="/prestamos" method="post">
+                <label for="pagoTotal">Monto:</label>
+                <input type="number" id="pagoTotal" name="pagoTotal" required>
+                <label for="interes">Tasa de Interés:</label>
+                <input type="number" step="0.01" id="interes" name="interes" required>
+                <label for="fechaPago">Fecha del Próximo Pago:</label>
+                <input type="text" id="fechaProximoPago" name="fechaPago" required>
+                <button type="submit">Agregar Cuenta</button>
+            </form>
+        </div>
+ <%   } %>
+
+    <h2>Lista de Cuentas de Préstamo</h2>
+    <ul id="user-list">
+        <% prestamos.forEach(prestamos => { %>
+            <li>
+                <div class="container">
+                    <p>ID: <%= prestamos.id %> </p>
+                    <p>Prestamo: <%= prestamos.monto %></p>
+                    <p>Tasa de Interes: <%= prestamos.interes %>% - Fechas de Pago: <%= prestamos.fechaPago %> de cada mes </p>
+
+                </div>
+
+                <% if(Usuario.rol==="admin"){%>
+                    <div>
+                        <button class="edit-button" onclick="editprestamo('<%= prestamos.id %>','<%= prestamos.pago %>','<%= prestamos.fechaPago %>','<%= prestamos.interes%>')">Editar</button>
+                        <button class="delete-button" onclick="deleteprestamo('<%= prestamos.id %>')">Eliminar</button>
+                    </div>
+                    <%} %>
+                    <% if(Usuario.rol==="usuario"){%>
+
+                        <form method="post">
+                            <input type="hidden" name="id" value="<%= prestamos.id %>">
+                            <button type="submit" class="edit-button">Unirse</button>
+                        </form>
+                        <%} %>
+            </li>
+        <% }); %>
+    </ul>
+
+    <div class="form-container" id="edit-coop-form-container" style="display:none;">
+        <h2>Editar Usuario</h2>
+        <form id="edit-coop-form" onsubmit="updateprestamo(event)">
+            <input type="hidden" id="edit-id" name="id">
+
+            <label for="interes">interes:</label>
+            <input type="text" id="edit-interes"name="interes" required>
+            <label for="pagoTotal">Pago:</label>
+            <input type="number"id="edit-pago" name="pagoTotal" required >
+            <label for="fechaPago">Fechas de pago:</label>
+             <input type="text" id="edit-fecha"name="fechaPago" required >
+
+            <button type="submit">Actualizar prestamo</button>
+        </form>
+    </div>
+
+    <script>
+        
+        function deleteprestamo(id) {
+            fetch(`http://localhost:3000/prestamos/borrar/${id}`, {
+                method: 'DELETE'
+            })
+            .then(()=>{
+                window.location.reload();
+            })
+        }
+
+        function editprestamo(id,pago,fecha,interes) {
+            document.getElementById('edit-id').value = id;
+            document.getElementById('edit-pago').value = pago;
+            document.getElementById('edit-interes').value = interes;
+            document.getElementById('edit-fecha').value = fecha;
+
+            document.getElementById('edit-coop-form-container').style.display = 'block';
+        }
+
+        function updateprestamo(event) {
+            event.preventDefault();
+            const id = document.getElementById('edit-id').value;
+            const json ={
+                pago: document.getElementById('edit-pago').value,
+                interes: document.getElementById('edit-interes').value,
+                fecha: document.getElementById('edit-fecha').value
+            } 
+           
+            fetch(`http://localhost:3000/prestamos/editar/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(json)
+            })
+            .then(() => {
+                    document.getElementById('edit-coop-form-container').style.display = 'none'
+                    location.reload()
+            });
+            
+        }
+    </script>
+</body>
+</html>

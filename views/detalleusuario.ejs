@@ -2,10 +2,32 @@
 <html>
 <head>
     <title>Detalles del Usuario</title>
+    <link rel="stylesheet" href="/css/usuarios.css">
 </head>
 <body>
-    <h1>Detalles del Usuario</h1>
-    <p>Nombre: <%= usuario.nombre %></p>
-    <p>Email: <%= usuario.email %></p>
+    <h1>Usuarios En sistema - SISTEMA BANCARIO</h1>
+    <div class="nav">
+        <a href="/usuarios/Inicio">Inicio</a>
+    </div>
+    <% usuarios.forEach((usuario)=>{%>
+    <div class="form-container">
+            <p>Nombre: <%= usuario.nombre %>
+            <p> Usuario: <%= usuario.usuario %></p>
+            <p> Email: <%= usuario.email %></p>
+            <p> Rol: <%= usuario.rol %></p>
+            <button class="delete-button" id="cerrar" onclick="deleteuser('<%= usuario.id %>')">Eliminar</button>
+            </div>
+      <%  }) %>
+
+      <script>
+         function deleteuser(id) {
+            fetch(`http://localhost:3000/usuarios/borrar/${id}`, {
+                method: 'DELETE'
+            })
+            .then(()=>{
+                window.location.reload();
+            })
+        }
+      </script>
 </body>
 </html>

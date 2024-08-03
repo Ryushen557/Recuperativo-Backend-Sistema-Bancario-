@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const usuarioController = require("../controllers/usuarios");
-const usuarios = require("../models/usuarios");
 
 router.get("/", (req, res) =>
     res.render("index")
@@ -63,5 +62,20 @@ router.put("/editar/:id",(req,res)=>{
         res.render("error", { message: err.message, error: err });
     });
 })
-
+router.get("/lista",(req,res)=>{
+    usuarioController.Obtener()
+    .then((result) => {
+        res.render("detalleUsuario",{usuarios:result})
+    }).catch((err) => {
+        res.render("error", { message: err.message, error: err });
+    });
+})
+router.delete("/borrar/:id",(req,res)=>{
+    usuarioController.BorrarUsuario(req.params.id)
+    .then(() => {
+        res.redirect("/usuarios/lista")
+    }).catch((err) => {
+        res.render("error", { message: err.message, error: err });
+    });
+})
 module.exports = router;

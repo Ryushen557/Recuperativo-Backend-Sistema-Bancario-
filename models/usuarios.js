@@ -167,7 +167,29 @@ class UsuariosModel {
       });
     });
   }
-  
+  Obtener(){
+    return new Promise((resolve, reject) => {
+      pool.query("SELECT * FROM usuarios",(err,result)=>{
+        if(err){
+          reject(err)
+        }else{
+          resolve(result)
+        }
+      })
+      
+    })
+  }
+  BorrarUsuario(id){
+    return new Promise((resolve, reject) => {
+        pool.query(`DELETE FROM usuarios WHERE id = ${id}`,(err,result)=>{
+            if(err){
+                reject(err)
+            }else{
+                resolve()
+            }
+        })
+    })
+}
 }
 
 module.exports = new UsuariosModel();

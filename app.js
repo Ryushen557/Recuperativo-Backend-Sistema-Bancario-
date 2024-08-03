@@ -6,7 +6,7 @@ const logger = require('morgan');
 const usuarioRouter = require('./routes/usuarios');
 const cuentaRouter = require('./routes/cuentas');
 const cooperativaRouter = require('./routes/cooperativas');
-
+const prestamoRouter = require("./routes/prestamos")
 const app = express();
 const port = 3000;
 
@@ -20,7 +20,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'views')));
 app.use(express.static(path.join(__dirname, 'public')));
 
-
+app.use("/prestamos",prestamoRouter)
 app.use('/usuarios', usuarioRouter);
 app.use('/cuentas', cuentaRouter); // Asegúrate de que esta línea está presente
 app.use('/cooperativas', cooperativaRouter);
