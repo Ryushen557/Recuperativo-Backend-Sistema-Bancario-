@@ -100,13 +100,14 @@ class CuentasModel {
                                     reject(new Error('No se encontro la cuenta'))
                                 }else{
                                     let cuenta = result[0]
-                                    if(cuenta.cantidad>=monto){
+                                    console.log(typeof(monto),typeof(cuenta.cantidad))
+                                    if(Number(cuenta.cantidad)>Number(monto)){
                                         pool.query(`SELECT cantidad AS cantidadDestino FROM cuenta WHERE numeroCuenta = '${cuentaDestino}' AND idUsuario = ${usuarioDestinoID} `,function(err,result){
                                             if(err){
                                                 reject(err)
                                             }else{
                                                 if(result.length>0){
-                                                    let cantidadDestino = Math.floor(result[0].cantidadDestino) +Number(monto)
+                                                    let cantidadDestino = Math.floor(result[0].cantidadDestino) + Number(monto)
                                                     console.log(cantidadDestino)
                                                     let cantidadOrigen = cuenta.cantidad - monto
                                                     pool.query(`UPDATE cuenta SET cantidad = ${cantidadDestino} WHERE numeroCuenta = ${cuentaDestino}`,function(err,result){
